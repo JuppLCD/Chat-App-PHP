@@ -1,7 +1,11 @@
 <?php
-include_once dirname(__FILE__) . "./Response.class.php";
-require_once(dirname(__FILE__) . './../db/Conection.class.php');
+// include_once dirname(__FILE__) . "./Response.class.php";
+// require_once(dirname(__FILE__) . './../db/Conection.class.php');
 
+namespace Class;
+
+use DB\Conexion;
+use Class\Respuestas;
 
 class Message extends Conexion
 {

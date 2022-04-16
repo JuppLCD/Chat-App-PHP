@@ -1,10 +1,12 @@
 <?php
 session_start();
 
+use Class\Auth;
+
 $outgoing_id = $_SESSION['unique_id'] ?? '';
 
 if (!empty($outgoing_id)) {
-    include_once dirname(__FILE__) . "./class/Auth.class.php";
+    // include_once dirname(__FILE__) . "./class/Auth.class.php";
     $_auth = new Auth;
 
     $arrayData = $_auth->getOtherUsers($outgoing_id);

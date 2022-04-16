@@ -1,5 +1,9 @@
 <?php
 
+namespace DB;
+
+use Mysqli;
+
 class Conexion
 {
 
@@ -19,7 +23,7 @@ class Conexion
         $this->database = $dataList['database'];
         $this->port = $dataList['port'];
 
-        $this->conexion = new mysqli(
+        $this->conexion = new Mysqli(
             $this->server,
             $this->user,
             $this->password,

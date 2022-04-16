@@ -5,7 +5,9 @@ if (!isset($_SESSION['unique_id'])) {
 }
 $unique_id = $_SESSION['unique_id'];
 
-require_once dirname(__FILE__) . './../../php/class/Auth.class.php';
+use Class\Auth;
+
+// require_once dirname(__FILE__) . './../../php/class/Auth.class.php';
 $_auth = new Auth;
 
 $userData = $_auth->getUserBySession($unique_id);

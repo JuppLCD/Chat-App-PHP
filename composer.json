@@ -1,0 +1,19 @@
+{
+	"name": "loren/mensajes-sokets",
+	"autoload": {
+		"psr-4": {
+			"Socket\\": "socket/",
+			"Class\\": "php/class",
+			"DB\\": "php/db"
+		}
+	},
+	"authors": [
+		{
+			"name": "JuppLCD",
+			"email": "lorenzocanovas207@gmail.com"
+		}
+	],
+	"require": {
+		"cboden/ratchet": "^0.4.4"
+	}
+}

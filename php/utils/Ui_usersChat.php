@@ -1,5 +1,8 @@
 <?php
-require_once dirname(__FILE__) . './class/Message.class.php';
+
+use Class\Message;
+
+// require_once dirname(__FILE__) . './class/Message.class.php';
 $_mess = new Message;
 
 foreach ($arrayData as $userData) {

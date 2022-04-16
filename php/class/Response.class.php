@@ -1,4 +1,7 @@
 <?php
+
+namespace Class;
+
 class Respuestas
 {
     public  $response = [

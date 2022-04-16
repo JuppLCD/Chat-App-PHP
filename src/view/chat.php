@@ -7,7 +7,9 @@ if (!isset($_GET['user_id']) && !empty($_GET['user_id'])) {
   header("location: users.php");
 }
 
-require_once dirname(__FILE__) . './../../php/class/Auth.class.php';
+use Class\Auth;
+
+// require_once dirname(__FILE__) . './../../php/class/Auth.class.php';
 $_auth = new Auth;
 
 $user_id = $_GET['user_id'] ?? '';

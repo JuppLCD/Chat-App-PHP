@@ -1,13 +1,16 @@
 <?php
 session_start();
 
+use Class\Auth;
+use Class\Respuestas;
+
 $fname = $_POST['fname'] ?? '';
 $lname = $_POST['lname'] ?? '';
 $email = $_POST['email'] ?? '';
 $password = $_POST['password'] ?? '';
 
 if (!empty($fname) && !empty($lname) && !empty($email) && !empty($password) && isset($_FILES['image'])) {
-    require_once dirname(__FILE__) . "./class/Auth.class.php";
+    // require_once dirname(__FILE__) . "./class/Auth.class.php";
     $_auth = new Auth;
 
     $resData = $_auth->signup($fname, $lname, $email, $password, $_FILES['image']);
@@ -24,7 +27,7 @@ if (!empty($fname) && !empty($lname) && !empty($email) && !empty($password) && i
     header('Content-Type: application/json');
     echo json_encode($resData);
 } else {
-    include_once dirname(__FILE__) . "./class/Response.class.php";
+    // include_once dirname(__FILE__) . "./class/Response.class.php";
     $_resClass = new Respuestas;
 
     header('Content-Type: application/json');
