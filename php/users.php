@@ -1,14 +1,20 @@
 <?php
-    session_start();
-    include_once "config.php";
-    $outgoing_id = $_SESSION['unique_id'];
-    $sql = "SELECT * FROM users WHERE NOT unique_id = {$outgoing_id} ORDER BY user_id DESC";
-    $query = mysqli_query($conn, $sql);
+session_start();
+
+$outgoing_id = $_SESSION['unique_id'] ?? '';
+
+if (!empty($outgoing_id)) {
+    include_once dirname(__FILE__) . "./class/Auth.class.php";
+    $_auth = new Auth;
+
+    $arrayData = $_auth->getOtherUsers($outgoing_id);
+
     $output = "";
-    if(mysqli_num_rows($query) == 0){
+
+    if (count($arrayData) > 0) {
+        include_once dirname(__FILE__) . './utils/Ui_usersChat.php';
+    } else {
         $output .= "No users are available to chat";
-    }elseif(mysqli_num_rows($query) > 0){
-        include_once "data.php";
     }
     echo $output;
-?>
+}

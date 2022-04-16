@@ -1,18 +1,17 @@
-<?php 
-    session_start();
-    if(isset($_SESSION['unique_id'])){
-        include_once "config.php";
-        $outgoing_id = $_SESSION['unique_id'];
-        $incoming_id = mysqli_real_escape_string($conn, $_POST['incoming_id']);
-        $message = mysqli_real_escape_string($conn, $_POST['message']);
-        if(!empty($message)){
-            $sql = mysqli_query($conn, "INSERT INTO messages (incoming_msg_id, outgoing_msg_id, msg)
-                                        VALUES ({$incoming_id}, {$outgoing_id}, '{$message}')") or die();
-        }
-    }else{
-        header("location: ../login.php");
-    }
+<?php
+session_start();
+$outgoing_id = $_SESSION['unique_id'] ?? '';
 
+$incoming_id = $_POST['incoming_id'] ?? '';
+$message = $_POST['message'] ?? '';
 
-    
-?>
+if (!empty($outgoing_id)  && !empty($incoming_id) && !empty($message)) {
+    require_once dirname(__FILE__) . './class/Message.class.php';
+    $_mess = new Message;
+
+    $res = $_mess->newMessage($outgoing_id, $incoming_id, $message);
+
+    // $res['status'] === 'error'
+} else {
+    header("location: ../login.php");
+}
