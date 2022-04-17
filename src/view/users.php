@@ -7,7 +7,7 @@ $unique_id = $_SESSION['unique_id'];
 
 use Class\Auth;
 
-// require_once dirname(__FILE__) . './../../php/class/Auth.class.php';
+require_once dirname(__FILE__) . './../../php/class/Auth.class.php';
 $_auth = new Auth;
 
 $userData = $_auth->getUserBySession($unique_id);
@@ -42,7 +42,7 @@ $page = 'users';
     <input type="text" placeholder="Enter name to search...">
     <button><i class="fas fa-search"></i></button>
   </div>
-  <div class="users-list">
+  <div class="users-list" data-unique_id='<?php echo $unique_id; ?>'>
 
   </div>
 </section>

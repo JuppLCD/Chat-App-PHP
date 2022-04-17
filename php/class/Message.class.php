@@ -1,8 +1,10 @@
 <?php
-// include_once dirname(__FILE__) . "./Response.class.php";
-// require_once(dirname(__FILE__) . './../db/Conection.class.php');
 
 namespace Class;
+
+include_once dirname(__FILE__) . "./Response.class.php";
+require_once(dirname(__FILE__) . './../db/Conection.class.php');
+
 
 use DB\Conexion;
 use Class\Respuestas;

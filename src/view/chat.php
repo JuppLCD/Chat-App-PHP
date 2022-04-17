@@ -9,7 +9,7 @@ if (!isset($_GET['user_id']) && !empty($_GET['user_id'])) {
 
 use Class\Auth;
 
-// require_once dirname(__FILE__) . './../../php/class/Auth.class.php';
+require_once dirname(__FILE__) . './../../php/class/Auth.class.php';
 $_auth = new Auth;
 
 $user_id = $_GET['user_id'] ?? '';
@@ -39,10 +39,10 @@ $page = 'chat';
   <div class="chat-box">
 
   </div>
-  <form action="#" class="typing-area">
+  <form class="typing-area" data-outgoing_id='<?php echo $_SESSION['unique_id']; ?>'>
     <input type="text" class="incoming_id" name="incoming_id" value="<?php echo $user_id; ?>" hidden>
     <input type="text" name="message" class="input-field" placeholder="Type a message here..." autocomplete="off">
-    <button><i class="fab fa-telegram-plane"></i></button>
+    <button class="active"><i class="fab fa-telegram-plane"></i></button>
   </form>
 </section>
 

@@ -1,6 +1,4 @@
 /vendor
-/php/images/*
-/socket
 
 *.jpg
 *.jpeg

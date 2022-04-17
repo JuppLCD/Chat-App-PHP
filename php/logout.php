@@ -6,7 +6,7 @@ use Class\Auth;
 $logout_id = $_GET['logout_id'] ?? '';
 
 if (isset($_SESSION['unique_id']) && !empty($logout_id)) {
-    // require_once dirname(__FILE__) . "./class/Auth.class.php";
+    require_once dirname(__FILE__) . "./class/Auth.class.php";
     $_auth = new Auth;
 
     $resData = $_auth->logout($logout_id);
