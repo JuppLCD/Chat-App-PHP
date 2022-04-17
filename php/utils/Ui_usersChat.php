@@ -22,11 +22,11 @@ foreach ($arrayData as $userData) {
     }
 
     $offline = ($userData['status'] == "Offline now") ? 'offline' : '';
-    $hid_me = ($outgoing_id == $userData['unique_id']) ? "hide" : "";
+    // $hid_me = ($outgoing_id == $userData['unique_id']) ? "hide" : "";
 
     $output .= '<a href="./chat.php?user_id=' . $userData['unique_id'] . '">
                     <div class="content">
-                        <img src="./../../php/images/' . $userData['img'] . '" alt="">
+                        <img src="./../../php/images/' . $userData['img'] . '" alt="' . $userData['fname'] . '_' . $userData['lname'] . '-' . $userData['unique_id'] . '">
                             <div class="details">
                                 <span>' . $userData['fname'] . " " . $userData['lname'] . '</span>
                                 <p>' . $you . $msg . '</p>
