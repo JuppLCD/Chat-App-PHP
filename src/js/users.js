@@ -71,7 +71,6 @@ websocket_server.onerror = function (err) {
 
 websocket_server.onmessage = function (res) {
 	const data = JSON.parse(res.data);
-	console.log(data);
 	switch (data.type) {
 		case 'message':
 			const div = document.createElement('div');
@@ -80,10 +79,7 @@ websocket_server.onmessage = function (res) {
 			const altUserIncoming = div.querySelector('img').alt;
 			const messageUserIncoming = div.querySelector('.details p').textContent;
 
-			console.log(usersList.querySelector(`a img[alt='${altUserIncoming}']`));
 			const UserIncoming = usersList.querySelector(`a img[alt='${altUserIncoming}']`).parentNode.parentNode;
-
-			console.log(UserIncoming);
 
 			UserIncoming.parentNode.removeChild(UserIncoming);
 
