@@ -7,11 +7,8 @@ set_time_limit(0);
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 
-use Class\Message;
-use Class\Auth;
-
-require_once __DIR__ . './../php/class/Auth.class.php';
-require_once __DIR__ . './../php/class/Message.class.php';
+use Php\class\Message;
+use Php\class\Auth;
 
 class Chat implements MessageComponentInterface
 {
@@ -47,14 +44,14 @@ class Chat implements MessageComponentInterface
 
         $in_file = $data->in_file;
         $outgoing_id = $data->outgoing_id;
+        $this->users[$sendingUser_id]['unique_id'] = $outgoing_id;
 
         switch ($type) {
             case 'connection':
-                $this->users[$sendingUser_id]['unique_id'] = $outgoing_id;
+                require_once __DIR__ . './../php/class/Message.class.php';
                 // ! CHAT
                 if ($in_file === 'CHAT') {
                     $incoming_id = $data->incoming_id;
-
                     $_mess = new Message;
                     $output = $_mess->getChat($outgoing_id, $incoming_id);
 
@@ -66,20 +63,21 @@ class Chat implements MessageComponentInterface
 
                 // ! USERS
                 if ($in_file === 'USERS') {
+                    require_once __DIR__ . './../php/class/Auth.class.php';
                     $_auth = new Auth;
 
                     $arrayData = $_auth->getOtherUsers($outgoing_id);
-
                     $output = "";
 
-                    if (count($arrayData) > 0) {
-                        require_once __DIR__ . './../php/utils/Ui_usersChat.php';
-                    } else {
+                    if (count($arrayData) === 0) {
                         $output .= "No users are available to chat";
+                    } else {
+                        $_mess = new Message;
+                        $output = $_mess->getUsersChat($arrayData, $outgoing_id, $output);
                     }
 
-                    $this->users[$sendingUser_id]['conn']->send(json_encode([
-                        "type" => $type, "user_list" => $output
+                    $sendingUser->send(json_encode([
+                        "type" => $type, "user_list" => $output, 'unique' => $outgoing_id, 'id' => $sendingUser_id
                     ]));
 
                     break;
@@ -96,6 +94,8 @@ class Chat implements MessageComponentInterface
 
                 $userConected = array_filter($this->users, fn ($user) => $user['unique_id'] === $incoming_id);
                 if (count($userConected) > 0) {
+                    require_once __DIR__ . './../php/class/Auth.class.php';
+
                     $_auth = new Auth;
                     $userData = $_auth->getUserBySession($outgoing_id)[0];
 
@@ -127,6 +127,7 @@ class Chat implements MessageComponentInterface
 
     private function newMessageAndUpdate($sendingUser, $outgoing_id, $incoming_id, $message, $type)
     {
+        require_once __DIR__ . './../php/class/Message.class.php';
         $_mess = new Message;
 
         $_mess->newMessage($outgoing_id, $incoming_id, $message);

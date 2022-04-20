@@ -53,7 +53,7 @@ websocket_server.onerror = function (err) {
 
 websocket_server.onmessage = function (res) {
 	const data = JSON.parse(res.data);
-	//  data.messages;
+	console.log(data);
 
 	switch (data.type) {
 		case 'message':
@@ -63,9 +63,7 @@ websocket_server.onmessage = function (res) {
 			break;
 		case 'connection':
 			// Cuando se conecta el usuario
-			// En caso de que este en chat me traigo la lista de todos los mensajes entre estos usuarios
-
-			// './../../php/get-chat.php';
+			// Traigo la lista de todos los mensajes entre los usuarios
 			incomingMessages(data);
 			break;
 	}

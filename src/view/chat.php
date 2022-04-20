@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . './../../vendor/autoload.php';
+
 session_start();
 if (!isset($_SESSION['unique_id'])) {
   header("location: login.php");
@@ -7,9 +9,11 @@ if (!isset($_GET['user_id']) && !empty($_GET['user_id'])) {
   header("location: users.php");
 }
 
-use Class\Auth;
+use Php\class\Auth;
+// No me funciona el autoload
+require_once __DIR__ . './../../php/class/Auth.class.php';
 
-require_once dirname(__FILE__) . './../../php/class/Auth.class.php';
+
 $_auth = new Auth;
 
 $user_id = $_GET['user_id'] ?? '';

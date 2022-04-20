@@ -71,6 +71,7 @@ websocket_server.onerror = function (err) {
 
 websocket_server.onmessage = function (res) {
 	const data = JSON.parse(res.data);
+	console.log(data);
 	switch (data.type) {
 		case 'message':
 			const div = document.createElement('div');

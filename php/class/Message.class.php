@@ -1,13 +1,12 @@
 <?php
 
-namespace Class;
+namespace Php\class;
 
-include_once dirname(__FILE__) . "./Response.class.php";
-require_once(dirname(__FILE__) . './../db/Conection.class.php');
+require_once __DIR__ . './../db/Conection.class.php';
+require_once __DIR__ . './Response.class.php';
 
-
-use DB\Conexion;
-use Class\Respuestas;
+use Php\db\Conexion;
+use Php\class\Respuestas;
 
 class Message extends Conexion
 {
@@ -91,6 +90,41 @@ class Message extends Conexion
         }
 
         return  $output;
+    }
+
+    public function getUsersChat($arrayData, $outgoing_id, $output)
+    {
+        foreach ($arrayData as $userData) {
+
+            $messageFromUser = $this->getLastMessages($userData, $outgoing_id);
+
+            $result = 'No message available';
+            $you = '';
+            $msg = 'No messages...';
+
+            // Ver si hubo conversacion con algun otro usuario
+            if (isset($messageFromUser[0])) {
+                $result = $messageFromUser[0]['msg'];
+                $msg = (strlen($result) > 28) ? substr($result, 0, 28) . '...' : $result;
+                //Quien fue el utimo en enviar mensaje
+                $you = ($outgoing_id == $messageFromUser[0]['outgoing_msg_id']) ? "You: " : "";
+            }
+
+            $offline = ($userData['status'] == "Offline now") ? 'offline' : '';
+            // $hid_me = ($outgoing_id == $userData['unique_id']) ? "hide" : "";
+
+            $output .= '<a href="./chat.php?user_id=' . $userData['unique_id'] . '">
+                    <div class="content">
+                        <img src="./../../php/images/' . $userData['img'] . '" alt="' . $userData['fname'] . '_' . $userData['lname'] . '-' . $userData['unique_id'] . '">
+                            <div class="details">
+                                <span>' . $userData['fname'] . " " . $userData['lname'] . '</span>
+                                <p>' . $you . $msg . '</p>
+                            </div>
+                    </div>
+                    <div class="status-dot ' . $offline . '"><i class="fas fa-circle"></i></div>
+                </a>';
+        };
+        return $output;
     }
 
     private function getMessages($outgoing_id, $incoming_id)

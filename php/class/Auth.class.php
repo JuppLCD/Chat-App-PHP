@@ -1,14 +1,12 @@
 <?php
 
-namespace Class;
+namespace Php\class;
 
-include_once dirname(__FILE__) . "./Response.class.php";
-require_once(dirname(__FILE__) . './../db/Conection.class.php');
+require_once __DIR__ . './../db/Conection.class.php';
+require_once __DIR__ . './Response.class.php';
 
-
-use DB\Conexion;
-use Class\Respuestas;
-
+use Php\db\Conexion;
+use Php\class\Respuestas;
 
 class Auth extends Conexion
 {

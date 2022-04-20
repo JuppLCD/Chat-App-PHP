@@ -1,14 +1,18 @@
 <?php
+require_once dirname(__FILE__) . './../vendor/autoload.php';
 session_start();
 
-use Class\Auth;
-use Class\Respuestas;
+// No funciona el autoload al querer hacer login
+require_once __DIR__ . './class/Auth.class.php';
+require_once __DIR__ . './class/Response.class.php';
+
+use Php\class\Auth;
+use Php\class\Respuestas;
 
 $email = $_POST['email'] ?? '';
 $password = $_POST['password'] ?? '';
 
 if (!empty($email) && !empty($password)) {
-    include_once dirname(__FILE__) . "./class/Auth.class.php";
     $_auth = new Auth;
 
     $resData = $_auth->login($email, $password);
@@ -23,7 +27,6 @@ if (!empty($email) && !empty($password)) {
     header('Content-Type: application/json');
     echo json_encode($resData);
 } else {
-    include_once dirname(__FILE__) . "./class/Response.class.php";
     $_resClass = new Respuestas;
 
     header('Content-Type: application/json');

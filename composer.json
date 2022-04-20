@@ -2,9 +2,8 @@
 	"name": "loren/mensajes-sokets",
 	"autoload": {
 		"psr-4": {
-			"Socket\\": "socket/",
-			"Class\\": "php/class",
-			"DB\\": "php/db"
+			"Socket\\": "./socket/",
+			"Php\\": "./php/"
 		}
 	},
 	"authors": [

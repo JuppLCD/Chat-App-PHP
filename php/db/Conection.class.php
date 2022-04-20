@@ -1,6 +1,6 @@
 <?php
 
-namespace DB;
+namespace Php\db;
 
 use Mysqli;
 

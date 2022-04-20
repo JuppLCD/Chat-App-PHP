@@ -1,6 +1,6 @@
 <?php
 
-namespace Class;
+namespace Php\class;
 
 class Respuestas
 {
