@@ -14,5 +14,8 @@
 	],
 	"require": {
 		"cboden/ratchet": "^0.4.4"
+	},
+	"scripts": {
+		"serve": "php ./socket/server.php"
 	}
 }
