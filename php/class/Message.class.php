@@ -14,43 +14,45 @@ class Message extends Conexion
     private $incoming_id = '';
     private $message = '';
 
+    private Respuestas $_resClass;
+
     public function newMessage($outgoing_id, $incoming_id, $message)
     {
-        $_resClass = new Respuestas;
+        $this->_resClass = new Respuestas;
 
-        $this->validCharactersOfMessage($outgoing_id, $incoming_id, $message, $_resClass);
+        $this->validCharactersOfMessage($outgoing_id, $incoming_id, $message);
 
-        if ($_resClass->response['status'] !== 'ok') {
-            return $_resClass->response;
+        if ($this->_resClass->response['status'] !== 'ok') {
+            return $this->_resClass->response;
         }
 
-        $this->creteMessage($_resClass);
+        $this->creteMessage();
 
-        if ($_resClass->response['status'] !== 'ok') {
-            return $_resClass->response;
+        if ($this->_resClass->response['status'] !== 'ok') {
+            return $this->_resClass->response;
         }
 
-        return $_resClass->response = [
+        return $this->_resClass->response = [
             'status' => "ok",
             "result" => "success"
         ];
     }
 
-    private function validCharactersOfMessage($outgoing_id, $incoming_id, $message, $_resClass)
+    private function validCharactersOfMessage($outgoing_id, $incoming_id, $message)
     {
         $outgoing_id = parent::validCharacters($outgoing_id);
         $incoming_id = parent::validCharacters($incoming_id);
         $message = parent::validCharacters($message);
 
         if (empty($outgoing_id) || empty($incoming_id) || empty($message)) {
-            return $_resClass->err("Data not valid", 200);
+            return $this->_resClass->err("Data not valid", 200);
         }
         $this->outgoing_id = $outgoing_id;
         $this->incoming_id = $incoming_id;
         $this->message = $message;
     }
 
-    private function creteMessage($_resClass)
+    private function creteMessage()
     {
 
         $query = "INSERT INTO messages (incoming_msg_id, outgoing_msg_id, msg) VALUES ('{$this->incoming_id}', '{$this->outgoing_id}', '{$this->message}')";
@@ -58,7 +60,7 @@ class Message extends Conexion
         $idMessage = parent::nonQueryId($query);
 
         if ($idMessage === 0) {
-            return $_resClass->err("Something went wrong. Please try again!", 500);
+            return $this->_resClass->err("Something went wrong. Please try again!", 500);
         }
     }
 

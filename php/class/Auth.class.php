@@ -16,40 +16,42 @@ class Auth extends Conexion
     private $lname = '';
     public $unique_id = '';
 
+    private Respuestas $_resClass;
+
     public function signup($fname, $lname, $email, $password, $img)
     {
-        $_resClass = new Respuestas;
+        $this->_resClass = new Respuestas;
 
         $this->validCharactersSingup($email, $password, $fname, $lname);
 
-        $userExist = $this->validEmail($_resClass);
+        $userExist = $this->validEmail();
 
-        if ($_resClass->response['status'] !== 'ok') {
-            return $_resClass->response;
+        if ($this->_resClass->response['status'] !== 'ok') {
+            return $this->_resClass->response;
         }
 
         if (count($userExist) !== 0) {
-            return $_resClass->err("{$this->email} - This email already exist!", 200);
+            return $this->_resClass->err("{$this->email} - This email already exist!", 200);
         }
 
-        $this->validImgAndMove($img, $_resClass);
+        $this->validImgAndMove($img);
 
-        if ($_resClass->response['status'] !== 'ok') {
-            return $_resClass->response;
+        if ($this->_resClass->response['status'] !== 'ok') {
+            return $this->_resClass->response;
         }
 
-        $this->createUser($_resClass);
+        $this->createUser($this->_resClass);
 
-        return $_resClass->response = [
+        return $this->_resClass->response = [
             'status' => "ok",
             "result" => "success"
         ];
     }
 
-    private function validEmail($_resClass)
+    private function validEmail()
     {
         if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
-            return $_resClass->err("{$this->email} is not a valid email!", 200);
+            return $this->_resClass->err("{$this->email} is not a valid email!", 200);
         }
 
         $userExist = parent::getData("SELECT * FROM users WHERE email = '{$this->email}'");
@@ -57,7 +59,7 @@ class Auth extends Conexion
         return $userExist;
     }
 
-    private function validImgAndMove($img, $_resClass)
+    private function validImgAndMove($img)
     {
         $img_name = $img['name'];
         $img_type = $img['type'];
@@ -69,13 +71,13 @@ class Auth extends Conexion
         $extensions = ["jpeg", "png", "jpg"];
 
         if (!in_array($img_ext, $extensions)) {
-            return $_resClass->err("Please upload an image file - jpeg, png, jpg", 400);
+            return $this->_resClass->err("Please upload an image file - jpeg, png, jpg", 400);
         }
 
         $types = ["image/jpeg", "image/jpg", "image/png"];
 
         if (!in_array($img_type, $types)) {
-            return $_resClass->err("Please upload an image file - jpeg, png, jpg", 400);
+            return $this->_resClass->err("Please upload an image file - jpeg, png, jpg", 400);
         }
 
         $time = time();
@@ -84,7 +86,7 @@ class Auth extends Conexion
         $tmp_name = $img['tmp_name'];
 
         if (!move_uploaded_file($tmp_name, "images/" . $new_img_name)) {
-            return $_resClass->err("Could not save image", 500);
+            return $this->_resClass->err("Could not save image", 500);
         }
 
         $this->imgName = $new_img_name;
@@ -109,7 +111,7 @@ class Auth extends Conexion
         $this->lname = $lname;
     }
 
-    private function createUser($_resClass)
+    private function createUser()
     {
         $unique_id = substr(bin2hex(random_bytes(20)), 0, 20);
         $status = "Active now";
@@ -117,28 +119,28 @@ class Auth extends Conexion
         $idUser = parent::nonQueryId("INSERT INTO users (unique_id, fname, lname, email, password, img, status)             VALUES ('{$unique_id}', '{$this->fname}','{$this->lname}', '{$this->email}', '{$this->password}', '{$this->imgName}', '{$status}')");
 
         if ($idUser === 0) {
-            return $_resClass->err("Something went wrong. Please try again!", 500);
+            return $this->_resClass->err("Something went wrong. Please try again!", 500);
         }
     }
 
     public function login($email, $password)
     {
-        $_resClass = new Respuestas;
+        $this->_resClass = new Respuestas;
 
         $this->validCharactersLogin($email, $password);
 
-        $userExist = $this->validEmail($_resClass);
+        $userExist = $this->validEmail();
 
-        if ($_resClass->response['status'] !== 'ok') {
-            return $_resClass->response;
+        if ($this->_resClass->response['status'] !== 'ok') {
+            return $this->_resClass->response;
         }
 
         if (count($userExist) === 0) {
-            return $_resClass->err("$email - This email not exist!", 200);
+            return $this->_resClass->err("$email - This email not exist!", 200);
         }
 
         if ($userExist[0]['password'] !== $this->password) {
-            return $_resClass->err("Email or Password is Incorrect!", 200);
+            return $this->_resClass->err("Email or Password is Incorrect!", 200);
         }
 
         $this->unique_id = $userExist[0]['unique_id'];
@@ -147,10 +149,10 @@ class Auth extends Conexion
         $verificar = parent::nonQuery("UPDATE users SET status = '{$status}' WHERE unique_id='{$this->unique_id}' ");
 
         // if (!$verificar) {
-        //     return $_resClass->err("Something went wrong. Please try again!", 500);
+        //     return $this->_resClass->err("Something went wrong. Please try again!", 500);
         // }
 
-        return $_resClass->response = [
+        return $this->_resClass->response = [
             'status' => "ok",
             "result" => "success"
         ];
@@ -158,12 +160,12 @@ class Auth extends Conexion
 
     public function logout(string $unique_id)
     {
-        $_resClass = new Respuestas;
+        $this->_resClass = new Respuestas;
 
         $unique_id = parent::validCharacters($unique_id);
 
         if (!isset($unique_id)) {
-            return $_resClass->err('', 400);
+            return $this->_resClass->err('', 400);
         }
         $status = "Offline now";
         $query = "UPDATE users SET status = '{$status}' WHERE unique_id='{$unique_id}'";
@@ -171,10 +173,10 @@ class Auth extends Conexion
         $afectedRows = parent::nonQuery($query);
 
         if (!$afectedRows) {
-            return $_resClass->err('', 500);
+            return $this->_resClass->err('', 500);
         }
 
-        return $_resClass->response;
+        return $this->_resClass->response;
     }
 
     public function getOtherUsers($outgoing_id)
