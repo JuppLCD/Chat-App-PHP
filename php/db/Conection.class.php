@@ -86,6 +86,19 @@ class Conexion
         return $this->conexion->real_escape_string($string);
     }
 
+    public function validCharactersArray(array $arrayToValidate)
+    {
+        $arrayValid = [];
+        foreach ($arrayToValidate as $clave => $valor) {
+            if (is_string($valor)) {
+                $arrayValid[$clave] = $this->validCharacters($valor);
+            } else {
+                $arrayValid[$clave] = $valor;
+            }
+        }
+        return $arrayValid;
+    }
+
     protected function encriptar(string $string)
     {
         return md5($string);

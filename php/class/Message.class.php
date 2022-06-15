@@ -2,79 +2,66 @@
 
 namespace Php\class;
 
-require_once __DIR__ . './../db/Conection.class.php';
+require_once __DIR__ . './../model/MessageModel.class.php';
 require_once __DIR__ . './Response.class.php';
 
-use Php\db\Conexion;
+use Php\model\MessageModel;
 use Php\class\Respuestas;
 
-class Message extends Conexion
+class Message
 {
-    private $outgoing_id = '';
-    private $incoming_id = '';
-    private $message = '';
-
-    private Respuestas $_resClass;
-
     public function newMessage($outgoing_id, $incoming_id, $message)
     {
-        $this->_resClass = new Respuestas;
+        $_resClass = new Respuestas;
+        $_messageModel = new MessageModel;
 
-        $this->validCharactersOfMessage($outgoing_id, $incoming_id, $message);
-
-        if ($this->_resClass->response['status'] !== 'ok') {
-            return $this->_resClass->response;
+        if (empty($outgoing_id) || empty($incoming_id) || empty($message)) {
+            return $_resClass->err("Data not valid", 400);
         }
 
-        $this->creteMessage();
+        $data = [
+            'outgoing_id' => $outgoing_id,
+            'incoming_id' => $incoming_id,
+            'message' => $message
+        ];
+        $result = $_messageModel->create($data);
 
-        if ($this->_resClass->response['status'] !== 'ok') {
-            return $this->_resClass->response;
+        if (isset($result['error'])) {
+            if ($result['error'] === 'Bad Data') {
+                return $_resClass->err('Data not valid', 400);
+            } else {
+                return $_resClass->err('Error to create message', 500);
+            }
         }
 
-        return $this->_resClass->response = [
+        return $_resClass->response = [
             'status' => "ok",
             "result" => "success"
         ];
     }
 
-    private function validCharactersOfMessage($outgoing_id, $incoming_id, $message)
-    {
-        $outgoing_id = parent::validCharacters($outgoing_id);
-        $incoming_id = parent::validCharacters($incoming_id);
-        $message = parent::validCharacters($message);
-
-        if (empty($outgoing_id) || empty($incoming_id) || empty($message)) {
-            return $this->_resClass->err("Data not valid", 200);
-        }
-        $this->outgoing_id = $outgoing_id;
-        $this->incoming_id = $incoming_id;
-        $this->message = $message;
-    }
-
-    private function creteMessage()
-    {
-
-        $query = "INSERT INTO messages (incoming_msg_id, outgoing_msg_id, msg) VALUES ('{$this->incoming_id}', '{$this->outgoing_id}', '{$this->message}')";
-
-        $idMessage = parent::nonQueryId($query);
-
-        if ($idMessage === 0) {
-            return $this->_resClass->err("Something went wrong. Please try again!", 500);
-        }
-    }
-
     public function getChat($outgoing_id, $incoming_id)
     {
+        $_messageModel = new MessageModel;
         $output = '';
 
-        $arrayData = $this->getMessages($outgoing_id, $incoming_id);
+        $data = [
+            'outgoing_id' => $outgoing_id,
+            'incoming_id' => $incoming_id,
+        ];
+
+        $arrayData = $_messageModel->getAll($data);
+
+        if (isset($arrayData['error'])) {
+            //! Ver como hacer con posible error al buscar en DB
+            return;
+        }
 
         if (count($arrayData) === 0) {
             $output .= '<div class="text">No messages are available. Once you send message they will appear here.</div>';
         } else {
             foreach ($arrayData as $userData) {
-                if ($userData['incoming_msg_id'] === $this->incoming_id) {
+                if ($userData['incoming_msg_id'] === $data['incoming_id']) {
                     $output .= '<div class="chat outgoing">
                                 <div class="details">
                                     <p>' . $userData['msg'] . '</p>
@@ -98,7 +85,19 @@ class Message extends Conexion
     {
         foreach ($arrayData as $userData) {
 
-            $messageFromUser = $this->getLastMessages($userData, $outgoing_id);
+            $_messageModel = new MessageModel;
+
+            $data = [
+                'outgoing_id' => $outgoing_id,
+                'unique_id' => $userData['unique_id'],
+            ];
+
+            $messageFromUser = $_messageModel->getLastMessages($data);
+
+            if (isset($messageFromUser['error'])) {
+                //! Ver como hacer con posible error al buscar en DB
+                return;
+            }
 
             $result = 'No message available';
             $you = '';
@@ -127,26 +126,5 @@ class Message extends Conexion
                 </a>';
         };
         return $output;
-    }
-
-    private function getMessages($outgoing_id, $incoming_id)
-    {
-        $this->outgoing_id = parent::validCharacters($outgoing_id);
-        $this->incoming_id = parent::validCharacters($incoming_id);
-
-        $sql = "SELECT * FROM messages LEFT JOIN users ON users.unique_id = messages.outgoing_msg_id
-                WHERE (outgoing_msg_id = '{$this->outgoing_id}' AND incoming_msg_id = '{$this->incoming_id}') OR (outgoing_msg_id = '{$this->incoming_id}' AND incoming_msg_id = '{$this->outgoing_id}') ORDER BY msg_id";
-
-        $arrayData = parent::getData($sql);
-        return $arrayData;
-    }
-
-    public function getLastMessages($userData, $outgoing_id)
-    {
-        $queryMessagesUser = "SELECT * FROM messages WHERE (incoming_msg_id = '{$userData['unique_id']}' OR outgoing_msg_id = '{$userData['unique_id']}') AND (outgoing_msg_id = '{$outgoing_id}' OR incoming_msg_id = '{$outgoing_id}') ORDER BY msg_id DESC LIMIT 1";
-
-        $messageFromUser = parent::getData($queryMessagesUser);
-
-        return $messageFromUser;
     }
 }
