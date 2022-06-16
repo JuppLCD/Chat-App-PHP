@@ -2,36 +2,31 @@
 
 namespace Php\class;
 
-require_once __DIR__ . './../db/Conection.class.php';
+require_once __DIR__ . './../model/UserModel.class.php';
 require_once __DIR__ . './Response.class.php';
 
-use Php\db\Conexion;
+use Php\model\UserModel;;
+
 use Php\class\Respuestas;
 
-class Auth extends Conexion
+class Auth
 {
-    private $email = '';
-    private $password = '';
-    private $fname = '';
-    private $lname = '';
-    public $unique_id = '';
-
     private Respuestas $_resClass;
+    private UserModel $_userModel;
 
     public function signup($fname, $lname, $email, $password, $img)
     {
         $this->_resClass = new Respuestas;
+        $this->_userModel = new UserModel();
 
-        $this->validCharactersSingup($email, $password, $fname, $lname);
-
-        $userExist = $this->validEmail();
+        $userExist = $this->validEmail($email);
 
         if ($this->_resClass->response['status'] !== 'ok') {
             return $this->_resClass->response;
         }
 
         if (count($userExist) !== 0) {
-            return $this->_resClass->err("{$this->email} - This email already exist!", 200);
+            return $this->_resClass->err("{$email} - This email already exist!", 200);
         }
 
         $this->validImgAndMove($img);
@@ -40,7 +35,13 @@ class Auth extends Conexion
             return $this->_resClass->response;
         }
 
-        $this->createUser($this->_resClass);
+        $data = ['imgName' => $this->imgName, 'email' => $email, 'password' => $password, 'fname' => $fname, 'lname' => $lname];
+
+        $newUser = $this->_userModel->create($data);
+
+        if ($newUser['error'] === 'Error interno del servidor') {
+            return $this->_resClass->err("", 500);
+        }
 
         return $this->_resClass->response = [
             'status' => "ok",
@@ -48,14 +49,12 @@ class Auth extends Conexion
         ];
     }
 
-    private function validEmail()
+    private function validEmail(string $email)
     {
-        if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
-            return $this->_resClass->err("{$this->email} is not a valid email!", 200);
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return $this->_resClass->err("{$email} is not a valid email!", 200);
         }
-
-        $userExist = parent::getData("SELECT * FROM users WHERE email = '{$this->email}'");
-
+        $userExist = $this->_userModel->toExist($email);
         return $userExist;
     }
 
@@ -92,63 +91,24 @@ class Auth extends Conexion
         $this->imgName = $new_img_name;
     }
 
-    private function validCharactersLogin($email, $password)
-    {
-        $email = parent::validCharacters($email);
-        $password = parent::validCharacters($password);
-
-        $this->email = $email;
-        $this->password = parent::encriptar($password);
-    }
-
-    private function validCharactersSingup($email, $password, $fname, $lname)
-    {
-        $fname = parent::validCharacters($fname);
-        $lname = parent::validCharacters($lname);
-        $this->validCharactersLogin($email, $password);
-
-        $this->fname = $fname;
-        $this->lname = $lname;
-    }
-
-    private function createUser()
-    {
-        $unique_id = substr(bin2hex(random_bytes(20)), 0, 20);
-        $status = "Active now";
-
-        $idUser = parent::nonQueryId("INSERT INTO users (unique_id, fname, lname, email, password, img, status)             VALUES ('{$unique_id}', '{$this->fname}','{$this->lname}', '{$this->email}', '{$this->password}', '{$this->imgName}', '{$status}')");
-
-        if ($idUser === 0) {
-            return $this->_resClass->err("Something went wrong. Please try again!", 500);
-        }
-    }
-
     public function login($email, $password)
     {
         $this->_resClass = new Respuestas;
+        $this->_userModel = new UserModel();
 
-        $this->validCharactersLogin($email, $password);
-
-        $userExist = $this->validEmail();
+        $userExist = $this->validEmail($email);
 
         if ($this->_resClass->response['status'] !== 'ok') {
             return $this->_resClass->response;
         }
 
-        if (count($userExist) === 0) {
-            return $this->_resClass->err("$email - This email not exist!", 200);
+        if (count($userExist) === 0 || $userExist[0]['password'] !== $password) {
+            return $this->_resClass->err("", 200);
         }
 
-        if ($userExist[0]['password'] !== $this->password) {
-            return $this->_resClass->err("Email or Password is Incorrect!", 200);
-        }
+        $afectedRows = $this->_userModel->inline($userExist[0]['unique_id']);
 
-        $this->unique_id = $userExist[0]['unique_id'];
-
-        $status = "Active now";
-        $verificar = parent::nonQuery("UPDATE users SET status = '{$status}' WHERE unique_id='{$this->unique_id}' ");
-
-        // if (!$verificar) {
+        // if (!$afectedRows) {
         //     return $this->_resClass->err("Something went wrong. Please try again!", 500);
         // }
 
@@ -161,16 +121,13 @@ class Auth extends Conexion
     public function logout(string $unique_id)
     {
         $this->_resClass = new Respuestas;
-
-        $unique_id = parent::validCharacters($unique_id);
+        $this->_userModel = new UserModel();
 
         if (!isset($unique_id)) {
             return $this->_resClass->err('', 400);
         }
-        $status = "Offline now";
-        $query = "UPDATE users SET status = '{$status}' WHERE unique_id='{$unique_id}'";
 
-        $afectedRows = parent::nonQuery($query);
+        $afectedRows = $this->_userModel->offline($unique_id);
 
         if (!$afectedRows) {
             return $this->_resClass->err('', 500);
@@ -181,33 +138,22 @@ class Auth extends Conexion
 
     public function getOtherUsers($outgoing_id)
     {
-        $outgoing_id = parent::validCharacters($outgoing_id);
-
-        $queryUsers = "SELECT * FROM users WHERE NOT unique_id = '{$outgoing_id}' ORDER BY user_id DESC";
-
-        $arrayData = parent::getData($queryUsers);
-
+        $_userModel = new UserModel();
+        $arrayData = $_userModel->getOther($outgoing_id);
         return $arrayData;
     }
 
     public function searchUser($searchTerm, $outgoing_id)
     {
-        $searchTerm = parent::validCharacters($searchTerm);
-        $outgoing_id = parent::validCharacters($outgoing_id);
-
-        $queryUsers = "SELECT * FROM users WHERE NOT unique_id = '{$outgoing_id}' AND (fname LIKE '%{$searchTerm}%' OR lname LIKE '%{$searchTerm}%') ";
-
-        $arrayData = parent::getData($queryUsers);
+        $_userModel = new UserModel();
+        $arrayData = $_userModel->search($searchTerm, $outgoing_id);
         return $arrayData;
     }
 
     public function getUserBySession($unique_id)
     {
-        $this->unique_id = parent::validCharacters($unique_id);
-
-        $queryUser = "SELECT * FROM users WHERE unique_id = '{$this->unique_id}'";
-
-        $userData = parent::getData($queryUser);
+        $_userModel = new UserModel();
+        $userData = $_userModel->getBySession($unique_id);
         return $userData;
     }
 }
