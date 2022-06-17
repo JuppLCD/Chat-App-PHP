@@ -9,6 +9,7 @@ use Ratchet\ConnectionInterface;
 
 use Php\class\Message;
 use Php\class\Auth;
+use Php\class\FormatMessage;
 
 class Chat implements MessageComponentInterface
 {
@@ -92,20 +93,20 @@ class Chat implements MessageComponentInterface
                     break;
                 }
 
+                require_once __DIR__ . './../php/class/Message.class.php';
+                require_once __DIR__ . './../php/class/FormatMessage.class.php';
+                $_mess = new Message;
+                $_formatMessage = new FormatMessage;
+
                 $userConected = array_filter($this->users, fn ($user) => $user['unique_id'] === $incoming_id);
                 if (count($userConected) > 0) {
                     require_once __DIR__ . './../php/class/Auth.class.php';
-
                     $_auth = new Auth;
+
                     $userData = $_auth->getUserBySession($outgoing_id)[0];
 
                     // Send message
-                    $incomingMessage = '<div class="chat incoming">
-                                <img src="./../../php/images/' . $userData['img'] . '" alt="' . $userData['fname'] . '_' . $userData['lname'] . '-' . $userData['unique_id'] . '">
-                                <div class="details">
-                                    <p>' . $message . '</p>
-                                </div>
-                            </div>';
+                    $incomingMessage = $_formatMessage->incomingMessage($userData, $message);
 
                     foreach ($this->clients as $clients) {
                         if ($clients->resourceId == key($userConected)) {
@@ -115,7 +116,15 @@ class Chat implements MessageComponentInterface
                         }
                     }
                 }
-                $this->newMessageAndUpdate($sendingUser, $outgoing_id, $incoming_id, $message, $type);
+
+                $_mess->newMessage($outgoing_id, $incoming_id, $message);
+
+                // Update chat
+                $sendMessage = $_formatMessage->sendMessage($message);
+
+                $sendingUser->send(json_encode([
+                    "type" => $type, "messages" => $sendMessage
+                ]));
                 break;
         }
     }
@@ -123,24 +132,5 @@ class Chat implements MessageComponentInterface
     public function onError(ConnectionInterface $conn, \Exception $e)
     {
         $conn->close();
-    }
-
-    private function newMessageAndUpdate($sendingUser, $outgoing_id, $incoming_id, $message, $type)
-    {
-        require_once __DIR__ . './../php/class/Message.class.php';
-        $_mess = new Message;
-
-        $_mess->newMessage($outgoing_id, $incoming_id, $message);
-
-        // Update chat
-        $sendMessage = '<div class="chat outgoing">
-                                    <div class="details">
-                                        <p>' . $message . '</p>
-                                    </div>
-                                </div>';
-
-        $sendingUser->send(json_encode([
-            "type" => $type, "messages" => $sendMessage
-        ]));
     }
 }

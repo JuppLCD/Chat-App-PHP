@@ -21,6 +21,8 @@ class Auth
 
         $userExist = $this->validEmail($email);
 
+        echo 'tata';
+
         if ($this->_resClass->response['status'] !== 'ok') {
             return $this->_resClass->response;
         }
@@ -28,6 +30,8 @@ class Auth
         if (count($userExist) !== 0) {
             return $this->_resClass->err("{$email} - This email already exist!", 200);
         }
+
+        echo 'tata2';
 
         $this->validImgAndMove($img);
 
@@ -38,6 +42,8 @@ class Auth
         $data = ['imgName' => $this->imgName, 'email' => $email, 'password' => $password, 'fname' => $fname, 'lname' => $lname];
 
         $newUser = $this->_userModel->create($data);
+
+        echo 'tata3';
 
         if ($newUser['error'] === 'Error interno del servidor') {
             return $this->_resClass->err("", 500);

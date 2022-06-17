@@ -40,21 +40,33 @@ class FormatMessage
         } else {
             foreach ($arrayData as $userData) {
                 if ($userData['incoming_msg_id'] === $data['incoming_id']) {
-                    $output .= '<div class="chat outgoing">
-                                <div class="details">
-                                    <p>' . $userData['msg'] . '</p>
-                                </div>
-                            </div>';
+                    $output .= $this->sendMessage($userData['msg']);
                 } else {
-                    $output .= '<div class="chat incoming">
-                                <img src="./../../php/images/' . $userData['img'] . '" alt="">
-                                <div class="details">
-                                    <p>' . $userData['msg'] . '</p>
-                                </div>
-                            </div>';
+                    $output .= $this->incomingMessage($userData, $userData['msg']);
                 }
             }
         }
         return $output;
+    }
+
+    public function incomingMessage(array $userData, string $message)
+    {
+        $incomingMSG = '<div class="chat incoming">
+                                <img src="./../../php/images/' . $userData['img'] . '" alt="' . $userData['fname'] . '_' . $userData['lname'] . '-' . $userData['unique_id'] . '">
+                                <div class="details">
+                                    <p>' . $message . '</p>
+                                </div>
+                            </div>';
+        return $incomingMSG;
+    }
+
+    public function sendMessage(string $message)
+    {
+        $sendMessage = '<div class="chat outgoing">
+                                    <div class="details">
+                                        <p>' . $message . '</p>
+                                    </div>
+                                </div>';
+        return $sendMessage;
     }
 }
