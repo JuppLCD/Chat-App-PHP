@@ -79,7 +79,7 @@ class Message
 
             if (isset($messageFromUser['error'])) {
                 //! Ver como hacer con posible error al buscar en DB
-                return '';
+                continue;
             }
 
             $_formatMessage = new FormatMessage;

@@ -11,17 +11,16 @@ use Php\class\Respuestas;
 
 class Auth
 {
+    public string $unique_id;
     private Respuestas $_resClass;
     private UserModel $_userModel;
 
     public function signup($fname, $lname, $email, $password, $img)
     {
         $this->_resClass = new Respuestas;
-        $this->_userModel = new UserModel();
+        $this->_userModel = new UserModel;
 
         $userExist = $this->validEmail($email);
-
-        echo 'tata';
 
         if ($this->_resClass->response['status'] !== 'ok') {
             return $this->_resClass->response;
@@ -30,8 +29,6 @@ class Auth
         if (count($userExist) !== 0) {
             return $this->_resClass->err("{$email} - This email already exist!", 200);
         }
-
-        echo 'tata2';
 
         $this->validImgAndMove($img);
 
@@ -43,11 +40,11 @@ class Auth
 
         $newUser = $this->_userModel->create($data);
 
-        echo 'tata3';
-
-        if ($newUser['error'] === 'Error interno del servidor') {
+        if (isset($newUser['error']) === 'Error interno del servidor') {
             return $this->_resClass->err("", 500);
         }
+
+        $this->unique_id = $newUser['unique_id'];
 
         return $this->_resClass->response = [
             'status' => "ok",
@@ -90,7 +87,8 @@ class Auth
 
         $tmp_name = $img['tmp_name'];
 
-        if (!move_uploaded_file($tmp_name, "images/" . $new_img_name)) {
+
+        if (!move_uploaded_file($tmp_name, 'images/' . $new_img_name)) {
             return $this->_resClass->err("Could not save image", 500);
         }
 
@@ -111,6 +109,8 @@ class Auth
         if (count($userExist) === 0 || $userExist[0]['password'] !== $password) {
             return $this->_resClass->err("", 200);
         }
+
+        $this->unique_id = $userExist[0]['unique_id'];
 
         $afectedRows = $this->_userModel->inline($userExist[0]['unique_id']);
 

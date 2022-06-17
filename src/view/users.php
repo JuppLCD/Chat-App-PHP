@@ -1,6 +1,4 @@
 <?php
-require_once __DIR__ . './../../vendor/autoload.php';
-
 session_start();
 if (!isset($_SESSION['unique_id'])) {
   header("location: login.php");
@@ -9,9 +7,7 @@ $unique_id = $_SESSION['unique_id'];
 
 use Php\class\Auth;
 
-// No me funciona el autoload
 require_once __DIR__ . './../../php/class/Auth.class.php';
-
 
 $_auth = new Auth;
 

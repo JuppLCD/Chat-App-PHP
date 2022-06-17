@@ -21,7 +21,7 @@ class UserModel extends Conexion
         if ($idUser === 0) {
             return ['error' => 'Error interno del servidor'];
         }
-        return ['ok' => true, 'id' => $idUser];
+        return ['ok' => true, 'id' => $idUser, 'unique_id' => $unique_id];
     }
 
     public function toExist(string $email)

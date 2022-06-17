@@ -21,7 +21,7 @@ class FormatMessage
         $offline = ($userData['status'] == "Offline now") ? 'offline' : '';
         // $hid_me = ($outgoing_id == $userData['unique_id']) ? "hide" : "";
 
-        return '<a href="./chat.php?user_id=' . $userData['unique_id'] . '">
+        $chat =  '<a href="./chat.php?user_id=' . $userData['unique_id'] . '">
                     <div class="content">
                         <img src="./../../php/images/' . $userData['img'] . '" alt="' . $userData['fname'] . '_' . $userData['lname'] . '-' . $userData['unique_id'] . '">
                             <div class="details">
@@ -31,6 +31,7 @@ class FormatMessage
                     </div>
                     <div class="status-dot ' . $offline . '"><i class="fas fa-circle"></i></div>
                 </a>';
+        return $chat;
     }
 
     public function getChat($output, $arrayData, $data)

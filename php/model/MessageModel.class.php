@@ -51,7 +51,7 @@ class MessageModel extends Conexion
         // $data =>>> $userData['unique_id'], outgoing_id
         $arrayValidData = parent::validCharactersArray($data);
 
-        if (isset($arrayValidData['outgoing_id']) || isset($arrayValidData['unique_id'])) {
+        if (!isset($arrayValidData['outgoing_id']) || !isset($arrayValidData['unique_id'])) {
             return ['error' => 'Bad Data'];
         }
 
