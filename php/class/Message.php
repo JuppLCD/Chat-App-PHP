@@ -2,20 +2,16 @@
 
 namespace Php\class;
 
-require_once __DIR__ . './../model/MessageModel.class.php';
-require_once __DIR__ . './Response.class.php';
-require_once __DIR__ . './FormatMessage.class.php';
-
 use Php\model\MessageModel;
 
-use Php\class\Respuestas;
+use Php\class\Response;
 use Php\class\FormatMessage;
 
 class Message
 {
     public function newMessage($outgoing_id, $incoming_id, $message)
     {
-        $_resClass = new Respuestas;
+        $_resClass = new Response;
         $_messageModel = new MessageModel;
 
         if (empty($outgoing_id) || empty($incoming_id) || empty($message)) {

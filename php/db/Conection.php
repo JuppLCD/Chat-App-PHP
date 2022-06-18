@@ -4,7 +4,7 @@ namespace Php\db;
 
 use Mysqli;
 
-class Conexion
+class Conection
 {
 
     private $server;

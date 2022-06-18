@@ -1,15 +1,13 @@
 <?php
 session_start();
 if (!isset($_SESSION['unique_id'])) {
-  header("location: login.php");
+  header("location: login");
 }
 if (!isset($_GET['user_id']) && !empty($_GET['user_id'])) {
-  header("location: users.php");
+  header("location: users");
 }
 
 use Php\class\Auth;
-
-require_once __DIR__ . './../../php/class/Auth.class.php';
 
 $_auth = new Auth;
 
@@ -30,7 +28,7 @@ $page = 'chat';
 
 <section class="chat-area">
   <header>
-    <a href="./users.php" class="back-icon"><i class="fas fa-arrow-left"></i></a>
+    <a href="./users" class="back-icon"><i class="fas fa-arrow-left"></i></a>
     <img src="./../../php/images/<?php echo $user['img']; ?>" alt="">
     <div class="details">
       <span><?php echo $user['fname'] . " " . $user['lname'] ?></span>

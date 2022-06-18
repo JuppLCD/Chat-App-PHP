@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (isset($_SESSION['unique_id'])) {
-  header("location: users.php");
+  header("location: users");
 }
 include_once dirname(__FILE__) . "./../components/Header.php";
 
@@ -39,7 +39,7 @@ $page = 'signup';
       <input type="submit" name="submit" value="Continue to Chat">
     </div>
   </form>
-  <div class="link">Already signed up? <a href="./login.php">Login now</a></div>
+  <div class="link">Already signed up? <a href="./login">Login now</a></div>
 </section>
 
 <?php include_once dirname(__FILE__) . "./../components/Footer.php"; ?>

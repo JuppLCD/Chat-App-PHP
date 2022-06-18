@@ -2,7 +2,7 @@
 
 namespace Php\class;
 
-class Respuestas
+class Response
 {
     public  $response = [
         'status' => "ok",
@@ -14,6 +14,7 @@ class Respuestas
         '400' => 'Datos enviados incompletos o con formato incorrecto',
         '405' => 'Metodo no permitido',
         '401' => 'No autorizado',
+        '404' => 'No Encontrado',
         '405' => 'Metodo no permitido',
         '500' => 'Error interno del servidor'
 

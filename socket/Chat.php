@@ -49,7 +49,6 @@ class Chat implements MessageComponentInterface
 
         switch ($type) {
             case 'connection':
-                require_once __DIR__ . './../php/class/Message.class.php';
                 // ! CHAT
                 if ($in_file === 'CHAT') {
                     $incoming_id = $data->incoming_id;
@@ -64,7 +63,6 @@ class Chat implements MessageComponentInterface
 
                 // ! USERS
                 if ($in_file === 'USERS') {
-                    require_once __DIR__ . './../php/class/Auth.class.php';
                     $_auth = new Auth;
 
                     $arrayData = $_auth->getOtherUsers($outgoing_id);
@@ -93,14 +91,11 @@ class Chat implements MessageComponentInterface
                     break;
                 }
 
-                require_once __DIR__ . './../php/class/Message.class.php';
-                require_once __DIR__ . './../php/class/FormatMessage.class.php';
                 $_mess = new Message;
                 $_formatMessage = new FormatMessage;
 
                 $userConected = array_filter($this->users, fn ($user) => $user['unique_id'] === $incoming_id);
                 if (count($userConected) > 0) {
-                    require_once __DIR__ . './../php/class/Auth.class.php';
                     $_auth = new Auth;
 
                     $userData = $_auth->getUserBySession($outgoing_id)[0];

@@ -9,14 +9,14 @@ form.onsubmit = (e) => {
 continueBtn.onclick = () => {
 	let formData = new FormData(form);
 
-	fetch('./../../php/signup.php', {
+	fetch('./../../php/signup', {
 		method: 'POST',
 		body: formData,
 	})
 		.then((res) => res.json())
 		.then((data) => {
 			if (data.result === 'success') {
-				location.href = 'users.php';
+				location.href = 'users';
 			} else {
 				errorText.style.display = 'block';
 				errorText.textContent = data.result.error_msg;

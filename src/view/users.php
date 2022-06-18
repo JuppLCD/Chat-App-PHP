@@ -1,13 +1,11 @@
 <?php
 session_start();
 if (!isset($_SESSION['unique_id'])) {
-  header("location: login.php");
+  header("location: login");
 }
 $unique_id = $_SESSION['unique_id'];
 
 use Php\class\Auth;
-
-require_once __DIR__ . './../../php/class/Auth.class.php';
 
 $_auth = new Auth;
 
@@ -36,7 +34,7 @@ $page = 'users';
         <p><?php echo $userInfo['status']; ?></p>
       </div>
     </div>
-    <a href="./../../php/logout.php?logout_id=<?php echo $userInfo['unique_id']; ?>" class="logout">Logout</a>
+    <a href="./../../php/logout?logout_id=<?php echo $userInfo['unique_id']; ?>" class="logout">Logout</a>
   </header>
   <div class="search">
     <span class="text">Select an user to start chat</span>

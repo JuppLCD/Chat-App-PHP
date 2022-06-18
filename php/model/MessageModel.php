@@ -2,11 +2,9 @@
 
 namespace Php\model;
 
-require_once __DIR__ . './../db/Conection.class.php';
+use Php\db\Conection;
 
-use Php\db\Conexion;
-
-class MessageModel extends Conexion
+class MessageModel extends Conection
 {
     public function create(array $data)
     {

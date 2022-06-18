@@ -29,7 +29,7 @@ searchBar.onkeyup = debounce(() =>
 			searchBar.classList.add('active');
 		} else {
 			searchBar.classList.remove('active');
-			fetch('./../../php/users.php', {
+			fetch('./../../php/users', {
 				method: 'GET',
 			})
 				.then((res) => res.text())
@@ -38,7 +38,7 @@ searchBar.onkeyup = debounce(() =>
 				});
 		}
 
-		fetch('./../../php/search.php', {
+		fetch('./../../php/search', {
 			method: 'POST',
 			body: new URLSearchParams('searchTerm=' + searchTerm),
 			headers: { 'Content-type': 'application/x-www-form-urlencoded' },

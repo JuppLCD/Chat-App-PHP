@@ -2,22 +2,19 @@
 
 namespace Php\class;
 
-require_once __DIR__ . './../model/UserModel.class.php';
-require_once __DIR__ . './Response.class.php';
-
 use Php\model\UserModel;;
 
-use Php\class\Respuestas;
+use Php\class\Response;
 
 class Auth
 {
     public string $unique_id;
-    private Respuestas $_resClass;
+    private Response $_resClass;
     private UserModel $_userModel;
 
     public function signup($fname, $lname, $email, $password, $img)
     {
-        $this->_resClass = new Respuestas;
+        $this->_resClass = new Response;
         $this->_userModel = new UserModel;
 
         $userExist = $this->validEmail($email);
@@ -97,7 +94,7 @@ class Auth
 
     public function login($email, $password)
     {
-        $this->_resClass = new Respuestas;
+        $this->_resClass = new Response;
         $this->_userModel = new UserModel();
 
         $userExist = $this->validEmail($email);
@@ -126,7 +123,7 @@ class Auth
 
     public function logout(string $unique_id)
     {
-        $this->_resClass = new Respuestas;
+        $this->_resClass = new Response;
         $this->_userModel = new UserModel();
 
         if (!isset($unique_id)) {

@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (isset($_SESSION['unique_id']) || !empty($_SESSION['unique_id'])) {
-  header("location: users.php");
+  header("location: users");
 }
 include_once dirname(__FILE__) . "./../components/Header.php";
 
@@ -25,7 +25,7 @@ $page = 'login';
       <input type="submit" name="submit" value="Continue to Chat">
     </div>
   </form>
-  <div class="link">Not yet signed up? <a href="./index.php">Signup now</a></div>
+  <div class="link">Not yet signed up? <a href="./register">Signup now</a></div>
 </section>
 
 <?php include_once dirname(__FILE__) . "./../components/Footer.php"; ?>
